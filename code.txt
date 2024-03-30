@@ -1,0 +1,59 @@
+// Include the library files
+#define BLYNK_PRINT Serial
+#include <ESP8266WiFi.h>
+#include <BlynkSimpleEsp8266.h>
+#include <Servo.h> // Include the servo library
+
+#define BLYNK_AUTH_TOKEN "6MIXBUIGzKRovY_7dblOBRk2ptey63eV" // Enter your Blynk auth token
+
+char auth[] = BLYNK_AUTH_TOKEN;
+char ssid[] = "Azad's house"; // Enter your WIFI name
+char pass[] = "Napa625682";   // Enter your WIFI password
+
+// Pin configuration
+const int ledPin = D0; // Pin connected to the LED
+
+bool ledState = LOW; // Initialize LED state as off
+
+// Servo motor configuration
+Servo servoMotor; // Create a servo object
+const int servoPin = D1; // Pin connected to the servo motor
+
+BLYNK_WRITE(V0) {
+  int buttonState = param.asInt(); // Read the value from V0
+  if (buttonState == 1) {
+    ledState = HIGH; // Turn LED on if V0 is 1
+  } else {
+    ledState = LOW; // Turn LED off if V0 is not 1
+  }
+}
+
+BLYNK_WRITE(V1) {
+  int servoPosition = param.asInt(); // Read the value from V1
+  servoMotor.write(servoPosition); // Set servo position based on slider value
+}
+
+void setup() {
+  // Set the LED pin as an output pin
+  pinMode(ledPin, OUTPUT);
+  // Initialize the Serial communication for debugging
+  Serial.begin(9600);
+  // Initialize the Blynk library
+  Blynk.begin(auth, ssid, pass, "blynk.cloud", 80);
+
+  // Attach the servo motor to the pin
+  servoMotor.attach(servoPin);
+}
+
+void loop() {
+  // Run the Blynk library
+  Blynk.run();
+
+  // Check the LED state and blink if necessary
+  if (ledState == HIGH) {
+    digitalWrite(ledPin, HIGH); // Turn LED on
+    delay(1000); // Wait for 1 second
+    digitalWrite(ledPin, LOW); // Turn LED off
+    delay(3000); // Wait for 3 seconds
+  }
+}
